@@ -1,0 +1,16 @@
+h1{
+	color: #F400DD; 
+	border: 5px solid purple;
+}
+
+h4{
+	background: rgb(255,100,80);
+}
+
+body{
+
+	background: yellow;
+		/*background: url(https://images.unsplash.com/photo-1506968430777-bf7784a87f23?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80);
+	background-repeat: no-repeat;
+	background-size: cover;*/
+}
