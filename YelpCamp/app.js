@@ -2,101 +2,56 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var Campground = require('./models/campground');
+var Comment = require('./models/comment');
+var User = require('./models/user');
+var passport = require('passport');
+var LocalStrategy = require('passport-local');
+var passportLocalMongoose = require('passport-local-mongoose');
+var seedDB = require("./seeds");
 
+
+//Route Files
+var campgroundRoutes = require("./routes/campgrounds.js");
+var commentRoutes = require("./routes/comments");
+var indexRoutes = require("./routes/index");
+
+
+//seedDB();
 
 mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true, useUnifiedTopology: true});	
 app.use(bodyParser.urlencoded({extended:true}));
 app.set("view engine", "ejs");
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/public"));
 
-app.get("/",function(req,res){
-    res.render("landing");
+// ==========================================
+
+//PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    secret: "Shinchu is cute",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// ==========================================
+
+
+//the below function would be called on every route as a middle ware!
+app.use(function(req,res,next){
+    res.locals.currentUser = req.user;
+    next();
 });
 
-//SCHEME SETUP
-var campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-
-});
-
-var Campground = mongoose.model("Campground", campgroundSchema);
-
-/*Campground.create({
-    name:"Chirag's Camp",
-    image:"https://combo.staticflickr.com/ap/build/images/jobs/good-panda.jpg",
-    description: "This is Chirag's Camp"
-}, function(err,campground){
-if(err){
-        console.log("Something went wrong");
-    }
-    else{
-        console.log("Campground added to the database");
-        console.log(campground);
-    }
-});*/
-
-var campgrounds = [
-    {name:"Chirag's Camp", image:"https://c1.staticflickr.com/5/4471/23727254668_bb82678d67_z.jpg"},
-    {name:"Disha's Camp", image:"https://combo.staticflickr.com/ap/build/images/jobs/good-panda.jpg"},
-    {name:"Lavish's Camp", image:"https://live.staticflickr.com/65535/48441271856_af538f5568_b.jpg"}
-]
-
-//INDEX - show all campgrounds
-app.get("/campgrounds",function(req,res){
-    //Get all the campgrounds from database
-    Campground.find({},function(err,allCampgrounds){
-        if(err){
-            console.log("Some Error occured");
-            console.log(err);
-        }
-        else{
-            res.render("index", {campgrounds: allCampgrounds});
-        }
-    })
-});
-
-//CREATe - add new campground to DB
-app.post("/campgrounds", function(req,res){
-    var name = req.body.name;
-    var image = req.body.image;
-    var desc = req.body.description;
-
-    var newCampground = {name:name, image:image, description: desc};
-    //Create a new campground and add to dataBase
-    Campground.create(newCampground, function(err,campground){
-    if(err){
-            console.log("Something went wrong");
-        }
-        else{
-            console.log("Campground added to the database");
-            console.log(campground);
-        res.redirect("/campgrounds");
-        }
-    });
-
-});
-
-//NEW - show form to create new campground
-app.get("/campgrounds/new",function(req,res){
-    res.render("new");
-});
-
-//SHOw - displays information about one campground
-app.get("/campgrounds/:id",function(req,res){
-
-    Campground.findById(req.params.id, function(err,foundCampground){
-        if(err){
-            console.log(err);
-        }
-        else{
-            console.log("foundCampground: " + foundCampground);
-            //res.render("index", {campgrounds: foundCampground});
-            res.render("show", {campground: foundCampground});
-        }
-    });
-});
+app.use("/", indexRoutes);
+app.use("/campgrounds/:id/comments", commentRoutes);
+app.use("/campgrounds",campgroundRoutes); //takes all routes defined in camgroundRoutes and appends /camgrounds
 
 
 app.listen(3000,function(){
