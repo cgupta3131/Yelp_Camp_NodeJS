@@ -9,6 +9,9 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var passportLocalMongoose = require('passport-local-mongoose');
 var seedDB = require("./seeds");
+var methodOverride = require('method-override');
+var flash = require('connect-flash');
+
 
 
 //Route Files
@@ -23,6 +26,9 @@ mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true, useUni
 app.use(bodyParser.urlencoded({extended:true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
+app.use(flash());
+
 
 // ==========================================
 
@@ -46,6 +52,9 @@ passport.deserializeUser(User.deserializeUser());
 //the below function would be called on every route as a middle ware!
 app.use(function(req,res,next){
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
+
     next();
 });
 
