@@ -18,6 +18,7 @@ var flash = require('connect-flash');
 var campgroundRoutes = require("./routes/campgrounds.js");
 var commentRoutes = require("./routes/comments");
 var indexRoutes = require("./routes/index");
+var reviewRoutes = require("./routes/reviews");
 
 
 //seedDB();
@@ -61,6 +62,7 @@ app.use(function(req,res,next){
 app.use("/", indexRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 app.use("/campgrounds",campgroundRoutes); //takes all routes defined in camgroundRoutes and appends /camgrounds
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 
 app.listen(3000,function(){

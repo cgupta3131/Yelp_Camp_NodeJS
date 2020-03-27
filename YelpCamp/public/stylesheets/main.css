@@ -1,5 +1,6 @@
 .thumbnail img{
 	width: 100%;
+	height: 700px;
 }
 
 
@@ -24,4 +25,7 @@
 #map{
 	height: 400px;
 	width: 100%;
+}
+.checked {
+    color: orange;
 }
