@@ -89,12 +89,22 @@ router.delete("/:comment_id", middleware.checkCommentOwnership, function(req,res
 
     Comment.findByIdAndRemove(req.params.comment_id,function(err){
         if(err){
-            res.redirect("back");
+            req.flash("error", err.message);
+            return res.redirect("back");
         }
-        else{
-            req.flash("success", "Comment delete");
-            res.redirect("/campgrounds/" + req.params.id); //redirects to show page
-        }
+        //deletes the comment from the Campground also
+        Campground.findByIdAndUpdate(req.params.id, {$pull: {comments: req.params.comment_id}}, {new: true})
+                .populate("comments").exec(function (err, campground) {
+            if (err) {
+                req.flash("error", err.message);
+                return res.redirect("back");
+            }
+
+            campground.save();
+            
+            req.flash("success", "Your comment was deleted successfully.");
+            res.redirect("/campgrounds/" + req.params.id);
+        });
     });
 });
 

@@ -84,6 +84,7 @@
                 <li class="list-group-item">Info 2</li>
                 <li class="list-group-item">Info 3</li>
             </div>
+            <div id="map"></div>
         </div>
         <div class="col-md-9">
             <div class="thumbnail">
@@ -195,6 +196,8 @@
   function initMap() {
     var lat = <%= parseFloat(campground.lat) %>;
     var lng = <%= parseFloat(campground.long) %>;
+
+
     var center = {lat: lat, lng: lng };
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 8,
@@ -217,7 +220,7 @@
     });
   }
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBby6dIMDmSAgqYnvwgBrcSzpa_LZl3zFg&callback=initMap"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2SH8OqlVkh-iQ0HicOg0WVzAuROUXtQY&callback=initMap"></script>
 
 <%- include("../partials/footer") %>
 

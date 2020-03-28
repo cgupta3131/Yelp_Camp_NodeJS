@@ -72,6 +72,7 @@ middlewareObj.checkReviewOwnership = function(req, res, next) {
 middlewareObj.checkReviewExistence = function (req, res, next) {
     if (req.isAuthenticated()) {
         Campground.findById(req.params.id).populate("reviews").exec(function (err, foundCampground) {
+            
             if (err || !foundCampground) {
                 req.flash("error", "Campground not found.");
                 res.redirect("back");
